@@ -1,5 +1,7 @@
 import os
 import shutil
+from xmlrpc.server import SimpleXMLRPCServer
+from xmlrpc.server import SimpleXMLRPCRequestHandler
 
 class filemanager:
     def __init__(self):
@@ -88,36 +90,17 @@ class filemanager:
     def help(self):
         return 'ls\ncd <Ruta>\ncreate <Nombre del archivo>\nread <Nombre del archivo>\nwrite <Nombre del archivo> <Texto a escribir>\nrename <Nombre> <Nuevo nombre>\nrm <Nombre>\nmkdir <Nombre>\nrmdir <Nombre>'
 
+class fileHandler()
 
-def main():
-    print('Para ver la lista de comandos escriba -H')
-    manejador = filemanager()
+class RequestHandler(SimpleXMLRPCRequestHandler):
+    rpc_paths = ('/mis_archivos',)
 
-    while True:
-        comando = input('>')
-        argumentos = comando.split(' ')
+class MyXMLRPCServer( SimpleXMLRPCServer ):
+    def __init__(self, *args, **kwargs):
+        super(SimpleXMLRPCServer, self).__init__(*args, **kwargs)
+        self.manejador = filemanager()
 
-        if argumentos[0] == 'create':
-            print(manejador.create(argumentos[1], argumentos[2]))
-        elif argumentos[0] == 'read':
-            print(manejador.read(argumentos[1]))
-        elif argumentos[0] == 'write':
-            print(manejador.write(argumentos[1]), argumentos[2])
-        elif argumentos[0] == 'rename':
-            print(manejador.rename(argumentos[1], argumentos[2]))
-        elif argumentos[0] == 'rm':
-            print(manejador.remove(argumentos[1]))
-        elif argumentos[0] == 'mkdir':
-            print (manejador.createdir(argumentos[1]))
-        elif argumentos[0] == 'rmdir':
-            print(manejador.rmdir(argumentos[1]))
-        elif argumentos[0] == 'ls':
-            print(manejador.ls())
-        elif argumentos[0] == 'cd':
-            print (manejador.cd(argumentos[1]))
-        elif argumentos[0] == '-h':
-            print(manejador.help())
-        else:
-            print('No existe el comando')
 
-main()
+with MyXMLRPCServer(('localhost', 8000), requestHandler=RequestHandler) as server:
+    server.register_instance()
+    server.serve_forever()
