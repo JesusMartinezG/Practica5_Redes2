@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/Practica5_Redes2.iml" filepath="$PROJECT_DIR$/.idea/Practica5_Redes2.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../calculadoraRPC/.idea/calculadoraRPC.iml" filepath="$PROJECT_DIR$/../calculadoraRPC/.idea/calculadoraRPC.iml" />
     </modules>
   </component>
 </project>
