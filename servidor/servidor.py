@@ -25,7 +25,7 @@ def read(currentPath, name):
 def write(currentPath, name, content):
     try:
         openfile = open(currentPath + name, 'a')  # append
-        openfile.write(content)
+        openfile.write('\n' + content)
         return 'Añadido al archivo'
     except (OSError, IOError):
         return 'No se pudo abrir "' + currentPath + name + '" Revise que el nombre sea correcto'
