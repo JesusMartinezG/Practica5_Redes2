@@ -3,10 +3,9 @@ from xmlrpc.server import SimpleXMLRPCServer
 from xmlrpc.server import SimpleXMLRPCRequestHandler
 
 
-def create(currentPath, name, content):
+def create(currentPath, name):
     try:
         newfile = open(currentPath + name, 'w+')  # write-read
-        newfile.write(content)
         newfile.close()
         return 'Archivo creado'
     except (OSError, IOError):
@@ -26,7 +25,7 @@ def read(currentPath, name):
 def write(currentPath, name, content):
     try:
         openfile = open(currentPath + name, 'a')  # append
-        openfile.write(content)
+        openfile.write('\n' + content)
         return 'Añadido al archivo'
     except (OSError, IOError):
         return 'No se pudo abrir "' + currentPath + name + '" Revise que el nombre sea correcto'
@@ -34,7 +33,7 @@ def write(currentPath, name, content):
 
 def rename(currentPath, name, newname):
     try:
-        os.rename(currentPath + name, currentPath.append(newname)) # Rename
+        os.rename(currentPath + name, currentPath + newname) # Rename
         return 'Archivo renombrado'
     except (OSError, IOError):
         return 'No se pudo abrir "' + currentPath + name + '" Revise que el nombre sea correcto'
@@ -54,7 +53,7 @@ def rmdir(currentPath, name):
         os.rmdir(currentPath + name)
         return 'Carpeta eliminada'
     except (OSError, IOError):
-        return 'No se encontró "' + currentPath + name + '" Revise que el nombre sea correcto y la carpeta esté vacía'
+        return 'No se pudo borrar "' + currentPath + name + '" Revise que el nombre sea correcto y la carpeta esté vacía'
 
 
 def createdir(currentPath, name):
@@ -62,12 +61,13 @@ def createdir(currentPath, name):
         os.makedirs(currentPath + name)
         return currentPath
     except (OSError, IOError):
-        return 'No se pudo crear "' + currentPath + name + '" Revise que el nombre de la carpeta no exista'
+        return 'No se pudo crear "' + currentPath + name + '" Revise que el nombre de la carpeta no exista previamente'
 
 
 def ls(currentPath):
     try:
-        return os.listdir(currentPath)
+        lista = '\n'.join(i for i in os.listdir(currentPath))
+        return lista
     except (OSError, IOError):
         return 'Hubo un error que no debería existir'
 
@@ -92,16 +92,23 @@ def cd(currentPath, name):
     else:
         return currentPath
 
-
 def help():
     return 'ls\ncd <Ruta>\ncreate <Nombre del archivo>\nread <Nombre del archivo>\nwrite <Nombre del archivo> <Texto a escribir>\nrename <Nombre> <Nuevo nombre>\nrm <Nombre>\nmkdir <Nombre>\nrmdir <Nombre>'
+
+def upload(currentPath, name, binaryFile):
+    try:
+        with open(currentPath + name, 'wb+') as newfile:
+            newfile.write(binaryFile.data)
+        return 'Archivo guardado en el servidor'
+    except (OSError, IOError):
+        return 'No se pudo crear "' + currentPath + name
 
 
 class RequestHandler(SimpleXMLRPCRequestHandler):
     rpc_paths = ('/mis_archivos',)
 
 
-with SimpleXMLRPCServer(('localhost', 8000), requestHandler=RequestHandler) as server:
+with SimpleXMLRPCServer(('192.168.1.76', 8000), requestHandler=RequestHandler) as server:
     server.register_function(create)
     server.register_function(read)
     server.register_function(write)
@@ -112,5 +119,6 @@ with SimpleXMLRPCServer(('localhost', 8000), requestHandler=RequestHandler) as s
     server.register_function(ls)
     server.register_function(cd)
     server.register_function(help)
+    server.register_function(upload)
 
     server.serve_forever()
