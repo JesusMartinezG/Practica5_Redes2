@@ -61,7 +61,7 @@ def createdir(currentPath, name):
         os.makedirs(currentPath + name)
         return currentPath
     except (OSError, IOError):
-        return 'No se pudo crear "' + currentPath + name + '" Revise que el nombre de la carpeta no exista'
+        return 'No se pudo crear "' + currentPath + name + '" Revise que el nombre de la carpeta no exista previamente'
 
 
 def ls(currentPath):
@@ -95,6 +95,15 @@ def cd(currentPath, name):
 def help():
     return 'ls\ncd <Ruta>\ncreate <Nombre del archivo>\nread <Nombre del archivo>\nwrite <Nombre del archivo> <Texto a escribir>\nrename <Nombre> <Nuevo nombre>\nrm <Nombre>\nmkdir <Nombre>\nrmdir <Nombre>'
 
+def upload(currentPath, name, binaryFile):
+    try:
+        with open(currentPath + name, 'wb+') as newfile:
+            newfile.write(binaryFile.data)
+        return 'Archivo guardado en el servidor'
+    except (OSError, IOError):
+        return 'No se pudo crear "' + currentPath + name
+
+
 class RequestHandler(SimpleXMLRPCRequestHandler):
     rpc_paths = ('/mis_archivos',)
 
@@ -110,5 +119,6 @@ with SimpleXMLRPCServer(('192.168.1.76', 8000), requestHandler=RequestHandler) a
     server.register_function(ls)
     server.register_function(cd)
     server.register_function(help)
+    server.register_function(upload)
 
     server.serve_forever()
