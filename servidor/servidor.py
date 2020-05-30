@@ -3,10 +3,9 @@ from xmlrpc.server import SimpleXMLRPCServer
 from xmlrpc.server import SimpleXMLRPCRequestHandler
 
 
-def create(currentPath, name, content):
+def create(currentPath, name):
     try:
         newfile = open(currentPath + name, 'w+')  # write-read
-        newfile.write(content)
         newfile.close()
         return 'Archivo creado'
     except (OSError, IOError):
@@ -67,7 +66,8 @@ def createdir(currentPath, name):
 
 def ls(currentPath):
     try:
-        return os.listdir(currentPath)
+        lista = '\n'.join(i for i in os.listdir(currentPath))
+        return lista
     except (OSError, IOError):
         return 'Hubo un error que no debería existir'
 
@@ -92,16 +92,14 @@ def cd(currentPath, name):
     else:
         return currentPath
 
-
 def help():
     return 'ls\ncd <Ruta>\ncreate <Nombre del archivo>\nread <Nombre del archivo>\nwrite <Nombre del archivo> <Texto a escribir>\nrename <Nombre> <Nuevo nombre>\nrm <Nombre>\nmkdir <Nombre>\nrmdir <Nombre>'
-
 
 class RequestHandler(SimpleXMLRPCRequestHandler):
     rpc_paths = ('/mis_archivos',)
 
 
-with SimpleXMLRPCServer(('localhost', 8000), requestHandler=RequestHandler) as server:
+with SimpleXMLRPCServer(('192.168.1.76', 8000), requestHandler=RequestHandler) as server:
     server.register_function(create)
     server.register_function(read)
     server.register_function(write)
