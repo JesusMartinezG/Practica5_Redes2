@@ -91,8 +91,6 @@ def cd(currentPath, name):
     else:
         return currentPath
 
-def help():
-    return 'ls\ncd <Ruta>\ncreate <Nombre del archivo>\nread <Nombre del archivo>\nwrite <Nombre del archivo> <Texto a escribir>\nrename <Nombre> <Nuevo nombre>\nrm <Nombre>\nmkdir <Nombre>\nrmdir <Nombre>\nupload <Ruta del archivo local>\ndownload <Nombre>'
 
 def upload(currentPath, name, binaryFile):
     try:
@@ -102,9 +100,15 @@ def upload(currentPath, name, binaryFile):
     except (OSError, IOError):
         return 'No se pudo crear "' + currentPath + name
 
+
 def download(currentPath, name):
     with open(currentPath + name, 'rb') as f:
         return xmlrpc.client.Binary(f.read())
+
+
+def help():
+    return 'ls\ncd <Ruta>\ncreate <Nombre del archivo>\nread <Nombre del archivo>\nwrite <Nombre del archivo> <Texto a escribir>\nrename <Nombre> <Nuevo nombre>\nrm <Nombre>\nmkdir <Nombre>\nrmdir <Nombre>\nupload <Ruta del archivo local>\ndownload <Nombre>'
+
 
 class RequestHandler(xmlrpc.server.SimpleXMLRPCRequestHandler):
     rpc_paths = ('/mis_archivos',)
