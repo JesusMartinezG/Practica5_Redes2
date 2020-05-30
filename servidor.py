@@ -1,106 +1,116 @@
 import os
-import shutil
 from xmlrpc.server import SimpleXMLRPCServer
 from xmlrpc.server import SimpleXMLRPCRequestHandler
 
-class filemanager:
-    def __init__(self):
-        self.currentPath = 'home/'  # inicia en la raiz del sistema de archivos
 
-    def create(self, name, content):
-        try:
-            newfile = open(self.currentPath + name, 'w+')  # write-read
-            newfile.write(content)
-            newfile.close()
-            return 'Archivo creado'
-        except (OSError, IOError):
-            print('No se pudo crear "' + self.currentPath + name + '" Revise que el nombre sea válido')
+def create(currentPath, name, content):
+    try:
+        newfile = open(currentPath + name, 'w+')  # write-read
+        newfile.write(content)
+        newfile.close()
+        return 'Archivo creado'
+    except (OSError, IOError):
+        print('No se pudo crear "' + currentPath + name + '" Revise que el nombre sea válido')
 
-    def read(self, name):
-        try:
-            openfile = open(self.currentPath + name, 'r')  # read
-            content = openfile.read()
-            return content
-        except (OSError, IOError):
-            print('No se pudo abrir "' + self.currentPath + name + '" Revise que el nombre sea correcto')
 
-    def write(self, name, content):
-        try:
-            openfile = open(self.currentPath + name, 'a')  # append
-            openfile.write(content)
-            return 'Añadido al archivo'
-        except (OSError, IOError):
-            return 'No se pudo abrir "' + self.currentPath + name + '" Revise que el nombre sea correcto'
+def read(currentPath, name):
+    try:
+        openfile = open(currentPath + name, 'r')  # read
+        content = openfile.read()
+        return content
+    except (OSError, IOError):
+        #print(currentPath)
+        return 'No se pudo abrir "' + currentPath + name + '" Revise que el nombre sea correcto'
 
-    def rename(self, name, newname):
-        try:
-            os.rename(self.currenPath + name, self.currentPath + newname) # Rename
-            return 'Archivo renombrado'
-        except (OSError, IOError):
-            return 'No se pudo abrir "' + self.currentPath + name + '" Revise que el nombre sea correcto'
 
-    def remove(self, name):
-        try:
-            os.remove()
-            return 'Archivo eliminado'
-        except (OSError, IOError):
-            return 'No se encontró "' + self.currentPath + name + '" Revise que el nombre sea correcto'
+def write(currentPath, name, content):
+    try:
+        openfile = open(currentPath + name, 'a')  # append
+        openfile.write(content)
+        return 'Añadido al archivo'
+    except (OSError, IOError):
+        return 'No se pudo abrir "' + currentPath + name + '" Revise que el nombre sea correcto'
 
-    def rmdir(self, name):
-        try:
-            shutil.rmtree(self.currentPath + name) # Borra carpeta y sus contenidos
-            return 'Carpeta eliminada'
-        except (OSError, IOError):
-            return 'No se encontró "' + self.currentPath + name + '" Revise que el nombre sea correcto'
 
-    def createdir(self, name):
-        try:
-            os.makedirs(self.currentPath + name)
-            return self.currentPath
-        except (OSError, IOError):
-            return 'No se pudo crear "' + self.currentPath + name + '" Revise que el nombre de la carpeta no exista'
+def rename(currentPath, name, newname):
+    try:
+        os.rename(currentPath + name, currentPath.append(newname)) # Rename
+        return 'Archivo renombrado'
+    except (OSError, IOError):
+        return 'No se pudo abrir "' + currentPath + name + '" Revise que el nombre sea correcto'
 
-    def ls(self):
-        try:
-            return os.listdir(self.currentPath)
-        except (OSError, IOError):
-            return 'Hubo un error que no debería existir'
 
-    def cd(self, name):
-        if name == '..':
-            dirs = self.currentPath.split('/')
-            if len(dirs) == 2:
-                return self.currentPath
-            else:
-                dirs.pop()
-                dirs.pop()
-                self.currentPath = '/'.join(dirs) + '/'
-                return self.currentPath
-                ath
-        if name[0] == '/':
-            self.currentPath = 'home/'
-            return self.currentPath
+def remove(currentPath, name):
+    try:
+        os.remove(currentPath + name)
+        return 'Archivo eliminado'
+    except (OSError, IOError):
+        return 'No se encontró "' + currentPath + name + '" Revise que el nombre sea correcto'
 
-        if os.path.exists(self.currentPath + name):
-            self.currentPath = self.currentPath + name + '/'
-            return self.currentPath
+
+def rmdir(currentPath, name):
+    try:
+        #shutil.rmtree(currentPath + name) # Borra carpeta y sus contenidos
+        os.rmdir(currentPath + name)
+        return 'Carpeta eliminada'
+    except (OSError, IOError):
+        return 'No se encontró "' + currentPath + name + '" Revise que el nombre sea correcto y la carpeta esté vacía'
+
+
+def createdir(currentPath, name):
+    try:
+        os.makedirs(currentPath + name)
+        return currentPath
+    except (OSError, IOError):
+        return 'No se pudo crear "' + currentPath + name + '" Revise que el nombre de la carpeta no exista'
+
+
+def ls(currentPath):
+    try:
+        return os.listdir(currentPath)
+    except (OSError, IOError):
+        return 'Hubo un error que no debería existir'
+
+
+def cd(currentPath, name):
+    if name == '..':
+        dirs = currentPath.split('/')
+        if len(dirs) == 2:
+            return currentPath
         else:
-            return self.currentPath
+            dirs.pop()
+            dirs.pop()
+            currentPath = '/'.join(dirs) + '/'
+            return currentPath
+    if name[0] == '/':
+        currentPath = 'home/'
+        return currentPath
 
-    def help(self):
-        return 'ls\ncd <Ruta>\ncreate <Nombre del archivo>\nread <Nombre del archivo>\nwrite <Nombre del archivo> <Texto a escribir>\nrename <Nombre> <Nuevo nombre>\nrm <Nombre>\nmkdir <Nombre>\nrmdir <Nombre>'
+    if os.path.exists(currentPath + name):
+        currentPath = currentPath + name + '/'
+        return currentPath
+    else:
+        return currentPath
 
-class fileHandler()
+
+def help():
+    return 'ls\ncd <Ruta>\ncreate <Nombre del archivo>\nread <Nombre del archivo>\nwrite <Nombre del archivo> <Texto a escribir>\nrename <Nombre> <Nuevo nombre>\nrm <Nombre>\nmkdir <Nombre>\nrmdir <Nombre>'
+
 
 class RequestHandler(SimpleXMLRPCRequestHandler):
     rpc_paths = ('/mis_archivos',)
 
-class MyXMLRPCServer( SimpleXMLRPCServer ):
-    def __init__(self, *args, **kwargs):
-        super(SimpleXMLRPCServer, self).__init__(*args, **kwargs)
-        self.manejador = filemanager()
 
+with SimpleXMLRPCServer(('localhost', 8000), requestHandler=RequestHandler) as server:
+    server.register_function(create)
+    server.register_function(read)
+    server.register_function(write)
+    server.register_function(rename)
+    server.register_function(remove)
+    server.register_function(rmdir)
+    server.register_function(createdir)
+    server.register_function(ls)
+    server.register_function(cd)
+    server.register_function(help)
 
-with MyXMLRPCServer(('localhost', 8000), requestHandler=RequestHandler) as server:
-    server.register_instance()
     server.serve_forever()
