@@ -33,7 +33,7 @@ def write(currentPath, name, content):
 
 def rename(currentPath, name, newname):
     try:
-        os.rename(currentPath + name, currentPath.append(newname)) # Rename
+        os.rename(currentPath + name, currentPath + newname) # Rename
         return 'Archivo renombrado'
     except (OSError, IOError):
         return 'No se pudo abrir "' + currentPath + name + '" Revise que el nombre sea correcto'
@@ -53,7 +53,7 @@ def rmdir(currentPath, name):
         os.rmdir(currentPath + name)
         return 'Carpeta eliminada'
     except (OSError, IOError):
-        return 'No se encontró "' + currentPath + name + '" Revise que el nombre sea correcto y la carpeta esté vacía'
+        return 'No se pudo borrar "' + currentPath + name + '" Revise que el nombre sea correcto y la carpeta esté vacía'
 
 
 def createdir(currentPath, name):
