@@ -41,6 +41,17 @@ while True:
                 print(s.upload(currentPath, name, send))
             else:
                 print('No se encontó el archivo ' + argumentos[1])
+        elif argumentos[0] == 'download':
+            name = argumentos[1]
+            try:
+                if not os.path.exists(currentPath):
+                    os.makedirs(currentPath)
+                with open(currentPath + name, 'wb') as f:
+                    f.write(s.download(currentPath, name).data)
+                    print(Fore.LIGHTRED_EX + 'Archivo guardado localmente')
+            except (OSError, IOError):
+                print(Fore.RED + 'No se encontró el archivo en el servidor')
+
         else:
             print(Fore.RED + 'No existe el comando')
     except (IndexError):
