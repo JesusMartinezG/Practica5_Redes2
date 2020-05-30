@@ -1,7 +1,6 @@
 import os
-from xmlrpc.server import SimpleXMLRPCServer
-from xmlrpc.server import SimpleXMLRPCRequestHandler
-
+import xmlrpc.server
+import xmlrpc.client
 
 def create(currentPath, name):
     try:
@@ -103,12 +102,15 @@ def upload(currentPath, name, binaryFile):
     except (OSError, IOError):
         return 'No se pudo crear "' + currentPath + name
 
+def download(currentPath, name):
+    with open(currentPath + name, 'rb') as f:
+        return xmlrpc.client.Binary(f.read())
 
-class RequestHandler(SimpleXMLRPCRequestHandler):
+class RequestHandler(xmlrpc.server.SimpleXMLRPCRequestHandler):
     rpc_paths = ('/mis_archivos',)
 
 
-with SimpleXMLRPCServer(('192.168.1.76', 8000), requestHandler=RequestHandler) as server:
+with xmlrpc.server.SimpleXMLRPCServer(('192.168.1.76', 8000), requestHandler=RequestHandler) as server:
     server.register_function(create)
     server.register_function(read)
     server.register_function(write)
@@ -120,5 +122,6 @@ with SimpleXMLRPCServer(('192.168.1.76', 8000), requestHandler=RequestHandler) a
     server.register_function(cd)
     server.register_function(help)
     server.register_function(upload)
+    server.register_function(download)
 
     server.serve_forever()
